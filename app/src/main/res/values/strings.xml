@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Renshuu Handsoff</string>
+    <string name="title_hands_free">Hands free</string>
+    <string name="title_interactive">Interactive</string>
+    <string name="title_settings">Settings</string>
+    <string name="field_api">INSERT-API-KEY-HERE</string>
+    <string name="btn_connect">Connect</string>
+    <string name="default_profile">Disconnected</string>
+</resources>
