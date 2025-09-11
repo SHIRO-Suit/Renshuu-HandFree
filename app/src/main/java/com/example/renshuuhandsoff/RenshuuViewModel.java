@@ -10,7 +10,7 @@ import java.util.List;
 
 public class RenshuuViewModel extends ViewModel {
     private MutableLiveData<String> profile = new MutableLiveData<>();
-    private MutableLiveData<String> firstWord = new MutableLiveData<>();
+    private MutableLiveData<WordResponse> firstWord = new MutableLiveData<>();
 
     private RenshuuRepository repo = new RenshuuRepository();
 
@@ -28,10 +28,10 @@ public class RenshuuViewModel extends ViewModel {
         repo.Sync(context);
     }
 
-    public LiveData<String> GetFirstWord() {
+    public LiveData<WordResponse> GetFirstWord() {
         return firstWord;
     }
-    public void FetchAllWords(Context c){
-        repo.FetchAllWords(c,firstWord);
+    public PausableThread FetchAllWords(Context c){
+        return repo.FetchAllWords(c,firstWord);
     }
 }

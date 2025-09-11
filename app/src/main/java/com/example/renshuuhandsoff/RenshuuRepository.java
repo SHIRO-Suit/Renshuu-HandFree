@@ -25,6 +25,7 @@ import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -67,30 +68,33 @@ public class RenshuuRepository {
         }).start();
     }
 
-    public void FetchAllWords(Context context,MutableLiveData<String> firstWord){
+    public PausableThread FetchAllWords(Context context,MutableLiveData<WordResponse> firstWord){
         WordsDatabase db = Room.databaseBuilder(context,
                         WordsDatabase.class, "WordDatabase")
                 .build();
 
-
-//        db.termDao().getAllWords();
-        new  Thread(new Runnable() {
+        PausableThread worker = new PausableThread() {
             @Override
             public void run() {
-                for (WordResponse w : db.termDao().getAllWords() ){
-                    String s = w.term.kana;
-                    firstWord.postValue(
-                            s);
-                    try{
-                    sleep(2000);
-                    }catch (InterruptedException e) {
-
+                List<WordResponse> allwords = db.termDao().getAllWords();
+                Collections.shuffle(allwords);
+                for (WordResponse w : allwords ){
+                    firstWord.postValue(w);
+                    synchronized (lock) {
+                        try {
+                            lock.wait(60000); // wait 60s or until notified
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
                     }
+
                 }
-
-
             }
-        }).start();
+        };
+
+        worker.start();
+        return worker;
     }
     public void Sync(Context context){
         FetchAllKnownTerms(context);
