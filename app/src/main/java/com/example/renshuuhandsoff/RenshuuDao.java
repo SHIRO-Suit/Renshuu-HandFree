@@ -6,11 +6,10 @@ import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 
 import java.util.List;
-import java.util.Map;
 
 
 @Dao
-public interface TermDao {
+public interface RenshuuDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public void insertTerm(Term term);
     @Insert(onConflict = OnConflictStrategy.IGNORE)
@@ -27,4 +26,6 @@ public interface TermDao {
     @Query("SELECT * FROM Term  JOIN TypeSpeech ON Term.`Type of  Speech` = TypeSpeech.id JOIN Definition ON Term.id = Definition.`id term` ORDER BY indexDef")
     public List<WordResponse> getAllWords();
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public void insertSchedule(Schedule schedule);
 }

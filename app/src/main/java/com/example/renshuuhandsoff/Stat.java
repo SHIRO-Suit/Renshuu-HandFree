@@ -17,6 +17,7 @@ public class Stat {
     @ColumnInfo(name = "next time listened")
     public Date nextListen;
 
+    public int mastery;
     @ColumnInfo(name = "Error Count")
     public int errorCount;
     @ColumnInfo(name = "Correct Count")
