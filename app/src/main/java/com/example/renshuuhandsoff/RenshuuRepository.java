@@ -101,7 +101,7 @@ public class RenshuuRepository {
         FetchAllKnownTerms(context);
     }
 
-    public void FetchSchedulesAndContent(Context context){
+    public void FetchSchedules(Context context){
         initDB(context);
         new Thread(new Runnable() {
             @Override
@@ -143,7 +143,7 @@ public class RenshuuRepository {
                             scheduleDB.name = name;
                             scheduleDB.reviewTodayCount = review;
                             scheduleDB.lastUpdate = lastUpdate;
-
+                            scheduleDB.valid = false;
                             db.renshuuDao().insertSchedule(scheduleDB);
 
                             //ajouter juste nom et id et tri des schedules, on verra pour le reste dans une autre methode.
@@ -157,6 +157,42 @@ public class RenshuuRepository {
                     safeguard++;
                     if(safeguard >50)return;
                 }while(current_page != total_pages);
+            }
+        }).start();
+
+    }
+    public void CheckSchedules(Context context){
+        initDB(context);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                    List<Integer> ids = db.renshuuDao().getAllScheduleIds();
+                    try {
+                        for (int id : ids){
+                            URL url = new URL("https://api.renshuu.org/v1/schedule/list"+id+"?group=all");
+                            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                            con.setRequestProperty("Authorization", "Bearer " + apiKey);
+                            con.setRequestMethod("GET");
+                            if( !"OK".equals(con.getResponseMessage())){
+                                Log.v("DEBUG","Bad response : " + con.getResponseMessage());
+                                return;
+                            }
+                            JSONObject root = NetworkUtils.getJsonResponse(con);
+                            Log.v("DEBUG", "RESPONSE CONTENT : " + root.toString());
+                            //if (!root.has("contents"))return;
+                            JSONObject content = root.getJSONObject("content");
+                            JSONArray terms = content.getJSONArray("terms");
+                            if(terms.length()==0 || (!terms.getJSONObject(0).has("japanese") && !terms.getJSONObject(0).has("kanji_full")) ){
+                                continue;
+                            }else{
+                                db.renshuuDao().setScheduleValid(id);
+                            }
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        //result.postValue("Error: " + e.getMessage());
+                    }
             }
         }).start();
 

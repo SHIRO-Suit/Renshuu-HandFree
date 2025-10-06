@@ -4,6 +4,7 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -28,4 +29,11 @@ public interface RenshuuDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public void insertSchedule(Schedule schedule);
+
+    @Query("SELECT id FROM Schedule")
+
+    public List<Integer> getAllScheduleIds();
+
+    @Query("UPDATE Schedule SET valid = true WHERE id = :id")
+    public void setScheduleValid(int id);
 }

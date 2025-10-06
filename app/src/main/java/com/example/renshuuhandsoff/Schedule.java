@@ -18,4 +18,6 @@ public class Schedule {
 
     public Date lastUpdate;
 
+    public boolean valid;
+
 }
