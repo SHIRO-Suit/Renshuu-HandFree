@@ -26,9 +26,12 @@ public interface RenshuuDao {
 
     @Query("SELECT * FROM Term  JOIN TypeSpeech ON Term.`Type of  Speech` = TypeSpeech.id JOIN Definition ON Term.id = Definition.`id term` ORDER BY indexDef")
     public List<WordResponse> getAllWords();
-
+    @Query("SELECT * FROM Term  JOIN TypeSpeech ON Term.`Type of  Speech` = TypeSpeech.id JOIN Definition ON Term.id = Definition.`id term`LEFT JOIN ScheduleContent ON Term.id = ScheduleContent.term WHERE ScheduleContent.id = :idSchedule ORDER BY indexDef")
+    public List<WordResponse> getAllWordsFromSchedule(int idSchedule);
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     public void insertSchedule(Schedule schedule);
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    public void insertScheduleContent(ScheduleContent scheduleContent);
 
     @Query("SELECT id FROM Schedule")
 
